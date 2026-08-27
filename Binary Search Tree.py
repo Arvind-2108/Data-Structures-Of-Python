@@ -1,125 +1,79 @@
 class Node:
     def __init__(self, key):
-        self.key = key
-        self.left = None
-        self.right = None
-
+        self.key, self.left, self.right = key, None, None
 class BinarySearchTree:
-    def __init__(self):
-        self.root = None
-
+    def __init__(self): self.root = None
     def insert(self, key):
         self.root = self._insert(self.root, key)
-
-    def _insert(self, root, key):
-        if root is None:
+    def _insert(self, node, key):
+        if not node:
             return Node(key)
-        
-        if key < root.key:
-            root.left = self._insert(root.left, key)
-        elif key > root.key:
-            root.right = self._insert(root.right, key)
-        
-        return root
-
+        if key < node.key: node.left = self._insert(node.left, key)
+        elif key > node.key: node.right = self._insert(node.right, key)
+        return node
     def search(self, key):
         return self._search(self.root, key)
-
-    def _search(self, root, key):
-        if root is None:
-            return False
-        if root.key == key:
-            return True
-            
-        if key < root.key:
-            return self._search(root.left, key)
-            
-        return self._search(root.right, key)
-
+    def _search(self, node, key):
+        if not node or node.key == key:
+            return node is not None
+        return self._search(node.left, key) if key < node.key else self._search(node.right, key)
     def delete(self, key):
         self.root = self._delete(self.root, key)
-
-    def _delete(self, root, key):
-        if root is None:
-            return root
-
-        if key < root.key:
-            root.left = self._delete(root.left, key)
-        elif key > root.key:
-            root.right = self._delete(root.right, key)
+    def _delete(self, node, key):
+        if not node:
+            return node
+        if key < node.key:
+            node.left = self._delete(node.left, key)
+        elif key > node.key:
+            node.right = self._delete(node.right, key)
         else:
-            if root.left is None:
-                return root.right
-            elif root.right is None:
-                return root.left
-            
-            root.key = self._min_value(root.right).key
-            
-            root.right = self._delete(root.right, root.key)
-
-        return root
-
-    def _min_value(self, node):
-        current = node
-        while current.left is not None:
-            current = current.left
-        return current
-
+            if not node.left:
+                return node.right
+            if not node.right: 
+                return node.left
+            node.key = self._min_val(node.right)
+            node.right = self._delete(node.right, node.key)
+        return node
+    def _min_val(self, node):
+        while node.left: node = node.left
+        return node.key
     def inorder(self):
-        result = []
-        self._inorder(self.root, result)
-        return result
-
-    def _inorder(self, root, result):
-        if root:
-            self._inorder(root.left, result)
-            result.append(root.key)
-            self._inorder(root.right, result)
-
+        res = []
+        self._in(self.root, res)
+        return res
+    def _in(self, node, res):
+        if node:
+            self._in(node.left, res)
+            res.append(node.key)
+            self._in(node.right, res)
     def preorder(self):
-        result = []
-        self._preorder(self.root, result)
-        return result
-
-    def _preorder(self, root, result):
-        if root:
-            result.append(root.key)                  
-            self._preorder(root.left, result)   
-            self._preorder(root.right, result)  
-
+        res = []
+        self._pre(self.root, res)
+        return res
+    def _pre(self, node, res):
+        if node:
+            res.append(node.key)
+            self._pre(node.left, res)
+            self._pre(node.right, res)
     def postorder(self):
-        result = []
-        self._postorder(self.root, result)
-        return result
-
-    def _postorder(self, root, result):
-        if root:
-            self._postorder(root.left, result)  
-            self._postorder(root.right, result) 
-            result.append(root.key)
-
-
+        res = []
+        self._post(self.root, res)
+        return res
+    def _post(self, node, res):
+        if node: 
+            self._post(node.left, res)
+            self._post(node.right, res)
+            res.append(node.key)
 bst = BinarySearchTree()
-
-n = int(input("Enter no.of elements : "))
-list=[]
-for i in range (0,n):
-    element = int(input("Enter element : "))
-    list.append(element)
-
-for l in list:
-    bst.insert(l)
-    
-print("In-order Traversal:", bst.inorder())
-print("Pre-order Traversal:", bst.preorder())
-print("Post-order Traversal:", bst.postorder())
-
-search_e = int(input("Enter element to search : "))
-
-print(f"Is {search_e} in the tree?", bst.search(search_e))
-
-delete_e = int(input("Enter element to delete : "))
-bst.delete(delete_e)
-
-print("After deletions:", bst.inorder())
-
+while True:
+    a= input("Enter entry time (default = end):")
+    if a =='': break
+    bst.insert(float(a))
+print("Inorder:", bst.inorder())
+print("Preorder:",bst.preorder())
+print("Postorder:",bst.postorder())
+s=float(input("Enter time to Search:  "))
+print(f"Search {s}:", bst.search(s))
+d=float(input("Enter time to delete:  "))
+bst.delete(d)
+print("Inorder after deleting log 30:", bst.inorder())
